@@ -297,6 +297,13 @@
             </div>
             
             <div class="nav-section">
+                <div class="nav-title">硬件价格</div>
+                <div class="nav-item" onclick="showSection('ram-prices')">
+                    <span class="icon">💾</span> 内存条价格走势
+                </div>
+            </div>
+            
+            <div class="nav-section">
                 <div class="nav-title">用户反馈</div>
                 <div class="nav-item" onclick="showSection('user-feedback')">
                     <span class="icon">💬</span> Reddit 用户反馈分析
@@ -694,6 +701,141 @@
                             <td>最近100次搜索结果</td>
                         </tr>
                     </table>
+                </div>
+            </div>
+            
+            <div id="ram-prices" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>💾 内存条价格走势</h2>
+                    
+                    <p>追踪 DDR4/DDR5 内存条市场价格变化，数据来源：3DCenter、TrendForce、Tom's Hardware 等。</p>
+
+                    <h3>📈 最新趋势（2026年2月）</h3>
+                    
+                    <table>
+                        <tr>
+                            <th>类型</th>
+                            <th>近期变化</th>
+                            <th>累计涨幅</th>
+                            <th>状态</th>
+                        </tr>
+                        <tr>
+                            <td>DDR5 台式机内存</td>
+                            <td>价格停滞/企稳</td>
+                            <td>+440%（自2025年7月）</td>
+                            <td>🟡 企稳</td>
+                        </tr>
+                        <tr>
+                            <td>DDR4 台式机内存</td>
+                            <td>回落 10%-26%</td>
+                            <td>+150%+（自2025年9月）</td>
+                            <td>🟢 回落</td>
+                        </tr>
+                        <tr>
+                            <td>笔记本 SO-DIMM</td>
+                            <td>暴涨 23.4%</td>
+                            <td>+369%（自2025年7月）</td>
+                            <td>🔴 暴涨</td>
+                        </tr>
+                    </table>
+
+                    <h3>💰 具体价格数据</h3>
+
+                    <h4>DDR5 台式机内存</h4>
+                    <ul>
+                        <li>2025年9月：16Gb 芯片约 <strong>$6.84</strong></li>
+                        <li>2025年12月：涨至 <strong>$27.20</strong>（涨幅 300%）</li>
+                        <li>2026年2月：价格<strong>首次趋稳</strong>，环比仅微涨 0.1%</li>
+                        <li>32GB 套装：从 $90-120 → <strong>$300-450</strong></li>
+                    </ul>
+
+                    <h4>DDR4 台式机内存</h4>
+                    <ul>
+                        <li>2026年2月：<strong>大幅回落 10%-26%</strong></li>
+                        <li>结束2025年暴涨周期</li>
+                        <li>刚需用户可把握当前窗口采购</li>
+                    </ul>
+
+                    <h4>笔记本内存（SO-DIMM）</h4>
+                    <ul>
+                        <li>4GB DDR4-2400：单品暴涨 <strong>193%</strong></li>
+                        <li>8GB DDR5-4800：涨幅接近 <strong>49%</strong></li>
+                        <li>德国/日本市场：笔记本内存普涨约 <strong>25%</strong></li>
+                    </ul>
+
+                    <h3>📊 价格走势图</h3>
+
+                    <div class="info-box">
+                        <p><strong>DDR5 价格演变：</strong></p>
+                        <pre style="margin-top: 12px;"><code>2025年7月    ████████░░░░░░░░░░░░  基准价
+2025年9月    ██████████████░░░░░░  +100%
+2025年12月   ████████████████████  +300%
+2026年1月    ████████████████████  +440%（峰值）
+2026年2月    ████████████████████  企稳（+440%）</code></pre>
+                    </div>
+
+                    <h3>🔍 涨价原因分析</h3>
+
+                    <ol>
+                        <li><strong>AI 需求爆发</strong> — 数据中心、AI 服务器对高容量内存需求激增</li>
+                        <li><strong>供应链紧张</strong> — HBM（高带宽内存）产能挤压普通 DRAM</li>
+                        <li><strong>库存周期</strong> — 2025年行业去库存后供应不足</li>
+                    </ol>
+
+                    <h3>📅 未来预测</h3>
+
+                    <table>
+                        <tr>
+                            <th>时间</th>
+                            <th>预测</th>
+                        </tr>
+                        <tr>
+                            <td>短期</td>
+                            <td>DDR5 台式机内存价格已企稳，笔记本内存仍可能上涨</td>
+                        </tr>
+                        <tr>
+                            <td>Q1 2026</td>
+                            <td>传统 DRAM 合约价预计再涨 60%</td>
+                        </tr>
+                        <tr>
+                            <td>2026年中</td>
+                            <td>价格可能持续攀升至年中</td>
+                        </tr>
+                    </table>
+
+                    <h3>💡 购买建议</h3>
+
+                    <table>
+                        <tr>
+                            <th>用户类型</th>
+                            <th>建议</th>
+                        </tr>
+                        <tr>
+                            <td>刚需用户</td>
+                            <td>DDR4 当前窗口较好，DDR5 可观望</td>
+                        </tr>
+                        <tr>
+                            <td>非刚需用户</td>
+                            <td>建议观察至一季度末</td>
+                        </tr>
+                        <tr>
+                            <td>笔记本用户</td>
+                            <td>SO-DIMM 涨幅最大，需谨慎</td>
+                        </tr>
+                    </table>
+
+                    <h3>📚 数据来源</h3>
+
+                    <ul>
+                        <li><a href="https://www.3dcenter.org/">3DCenter</a> - 德国零售市场监测</li>
+                        <li><a href="https://www.trendforce.com/">TrendForce 集邦咨询</a> - 产业研究机构</li>
+                        <li><a href="https://www.tomshardware.com/">Tom's Hardware</a> - 硬件价格追踪</li>
+                        <li><a href="https://www.zol.com.cn/">ZOL 中关村在线</a> - 国内市场数据</li>
+                    </ul>
+
+                    <div class="info-box" style="margin-top: 24px;">
+                        <p>📅 <strong>更新时间：</strong>2026-02-28 | <strong>下次更新：</strong>每周追踪</p>
+                    </div>
                 </div>
             </div>
             
