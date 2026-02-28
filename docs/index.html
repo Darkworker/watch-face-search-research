@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表盘搜索功能研究知识库</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid #e8e8e8;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 24px;
+        }
+        .nav-section {
+            margin-bottom: 20px;
+        }
+        .nav-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .nav-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-item:hover {
+            background: #f0f2f5;
+            color: #333;
+        }
+        .nav-item.active {
+            background: #f0f2f5;
+            color: #667eea;
+            font-weight: 500;
+        }
+        .nav-item .icon {
+            width: 16px;
+            text-align: center;
+        }
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+        }
+        .header {
+            background: #fff;
+            padding: 32px 40px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+        .header-meta {
+            display: flex;
+            gap: 24px;
+            color: #666;
+            font-size: 14px;
+        }
+        .header-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .content-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 24px 0 12px;
+        }
+        p {
+            margin-bottom: 16px;
+            color: #444;
+        }
+        ul, ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+        }
+        li {
+            margin-bottom: 8px;
+            color: #444;
+        }
+        code {
+            background: #f5f7fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            color: #667eea;
+        }
+        pre {
+            background: #1a1a2e;
+            color: #eaeaea;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #f0f2f5;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #666;
+            margin-right: 8px;
+        }
+        .highlight {
+            background: linear-gradient(120deg, #ffeaa7 0%, #ffeaa7 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 88%;
+            padding: 0 4px;
+        }
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+        .info-box p {
+            margin: 0;
+            color: #555;
+        }
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        .checklist li {
+            padding-left: 28px;
+            position: relative;
+        }
+        .checklist li::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: #999;
+        }
+        .checklist li.checked::before {
+            content: "☑";
+            color: #52c41a;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">⌚</div>
+                表盘搜索研究
+            </div>
+            <div class="subtitle">智能手表表盘搜索算法与实现</div>
+            
+            <div class="nav-section">
+                <div class="nav-title">概览</div>
+                <div class="nav-item active" onclick="showSection('overview')">
+                    <span class="icon">📋</span> 研究概述
+                </div>
+                <div class="nav-item" onclick="showSection('problem')">
+                    <span class="icon">🎯</span> 问题定义
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">技术方案</div>
+                <div class="nav-item" onclick="showSection('data-structure')">
+                    <span class="icon">🗂️</span> 数据结构
+                </div>
+                <div class="nav-item" onclick="showSection('architecture')">
+                    <span class="icon">🏗️</span> 搜索架构
+                </div>
+                <div class="nav-item" onclick="showSection('recall')">
+                    <span class="icon">🔍</span> 召回策略
+                </div>
+                <div class="nav-item" onclick="showSection('ranking')">
+                    <span class="icon">📊</span> 排序策略
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">关键技术</div>
+                <div class="nav-item" onclick="showSection('content-understanding')">
+                    <span class="icon">🖼️</span> 内容理觡
+                </div>
+                <div class="nav-item" onclick="showSection('intent-understanding')">
+                    <span class="icon">💭</span> 意图理解
+                </div>
+                <div class="nav-item" onclick="showSection('performance')">
+                    <span class="icon">⚡</span> 性能优化
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">待办</div>
+                <div class="nav-item" onclick="showSection('todo')">
+                    <span class="icon">✅</span> 待深入研究
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">参考</div>
+                <div class="nav-item" onclick="showSection('references')">
+                    <span class="icon">📚</span> 参考资料
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="header">
+                <h1>表盘搜索功能研究报告</h1>
+                <div class="header-meta">
+                    <span>📅 创建时间：2026-02-28</span>
+                    <span>🔄 更新周期：每周一</span>
+                    <span>🏷️ 标签：智能手表、搜索算法、推荐系统</span>
+                </div>
+            </div>
+            
+            <div id="overview" class="content-section">
+                <div class="content-card">
+                    <h2>📋 研究概述</h2>
+                    <div class="info-box">
+                        <p><strong>研究领域：</strong>智能手表表盘搜索算法与实现方案</p>
+                    </div>
+                    <p>本知识库系统性地研究智能手表表盘搜索功能的技术实现方案，涵盖从问题定义、技术架构到关键算法的完整链路。</p>
+                    <p>参考 Facer 平台（50万+ 表盘）的实际案例，分析用户需求痛点，提出可行的技术解决方案。</p>
+                    
+                    <h3>核心研究内容</h3>
+                    <ul>
+                        <li><span class="highlight">表盘数据结构</span>设计 — 如何高效存储和索引表盘元数据</li>
+                        <li><span class="highlight">搜索架构</span> — 召回→粗排→精排→重排的完整链路</li>
+                        <li><span class="highlight">内容理解</span> — 图像识别、OCR、组件检测</li>
+                        <li><span class="highlight">意图理解</span> — Query解析、多模态搜索、个性化</li>
+                        <li><span class="highlight">性能优化</span> — 侹缘计算、缓存策略、增量更新</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="problem" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>🎯 问题定义</h2>
+                    
+                    <h3>1.1 核心场景</h3>
+                    <p>智能手表表盘数量庞大（Facer 平台有 <strong>50万+</strong> 表盘），用户需要快速找到符合自己审美和功能的表盘。</p>
+                    
+                    <h3>1.2 搜索维度</h3>
+                    <table>
+                        <tr>
+                            <th>维度</th>
+                            <th>具体属性</th>
+                            <th>示例</th>
+                        </tr>
+                        <tr>
+                            <td>视觉风格</td>
+                            <td>数字/指针、简约/复杂、颜色主题</td>
+                            <td>黑色简约、复古指针</td>
+                        </tr>
+                        <tr>
+                            <td>功能特性</td>
+                            <td>健康数据、天气、电量、步数等组件</td>
+                            <td>带心率、显示天气</td>
+                        </tr>
+                        <tr>
+                            <td>使用场景</td>
+                            <td>运动、商务、休闲、节日</ttd>
+                            <td>商务伸议、户夗跑步</td>
+                        </tr>
+                        <tr>
+                            <td>设备适配</td>
+                            <td>屏幕形状（圆��Z�）、分辩㎇</td>
+                            <td>圆形表盘、466×46</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>1.3 用户痛点（Facer 平台反馈）</h3>
+                    <ul>
+                        <li>❌ 缺少<strong>细粒度筛选</strong>：数字/指针、免费/付费、功能特性</li>
+                        <li>❌ 搜索依赖<strong>关键词匹配</strong>，缺乏语义理解</li>
+                        <li>❌ 缺少<strong>高级筛选器</strong>：按日期、同步数、功能特性筛选</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="data-structure" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>🗂️ 表盘数据结构</h2>
+                    <p>参考专利 <a href="https://patents.google.com/patent/CN113268235A/zh">CN113268235A</a> 的智能手表云端表盘设计方法。</p>
+                    
+                    <h3>数据结构定义</h3>
+                    <pre><code>表盘 = {
+  // 基础信息
+  基础信息: {
+    ID: string,
+    名称: string,
+    作者: string,
+    创建时间: timestamp,
+    更新时间: timestamp
+  },
+  
+  // 视觉元数据
+  视觉元数据: {
+    风格标签: string[],      // ["数字", "简约", "商务"]
+    颜色主色调: string,       // "#1a1a1a"
+    复杂度评分: number,       // 1-10
+    预览图URL: string
+  },
+  
+  // 功能元数据
+  功能元数据: {
+    组件列表: Component[],    // 时间、日期、心率、天气等
+    数据源: DataSource[],     // 健康、天气、位置等
+    交互方式: Interaction[]   // 点击、滑动、旋转表冠
+  },
+  
+  // 设备适配
+  设备适配: {
+    支持品牌: string[],       // ["Apple", "Samsung", "Garmin"]
+    屏幕形状: enum,           // 圆形 | 方形
+    分辨率: Resolution[]      // [{宽:466, 高:466}]
+  },
+  
+  // 用户行为
+  用户行为: {
+    下载量: number,
+    评分: number,             // 1-5
+    使用时长: number,         // 平均使用天数
+    收藏数: number
+  }
+}</code></pre>
+                </div>
+            </div>
+            
+            <div id="architecture" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>🏗️ 搜索架构</h2>
+                    <p>采用的推荐系统通用的 <span class="highlight">多阶段漏斗</span> 架构：</p>
+                    
+                    <pre><code>用户Query → 意图识别 → 召回层 → 粗排 → 精排 → 重排 → 结果
+                ↓           ↓        ↓      ↓      ↓
+            关键词解析   多路召回   快速过滤  模型打分  多样性/新鲜度</code></pre>
+                    
+                    <h3>各阶段说明</h3>
+                    <table>
+                        <tr>
+                            <th>阶段</th>
+                            <th>输入规模</th>
+                            <th>输出规模</th>
+                            <th>延迟要求</th>
+                        </tr>
+                        <tr>
+                            <td>意图识别</td>
+                            <td>用户Query</td>
+                            <td>结构化查询</td>
+                            <td>< 10ms</td>
+                        </tr>
+                        <tr>
+                            <td>召回层</td>
+                            <td>50万+ 表盘</td>
+                            <td>~1000</td>
+                            <td>< 50ms</td>
+                        </tr>
+                        <tr>
+                            <td>粗排,/td>
+                            <td>~1000</td>
+                            <td>~100</td>
+                            <td>< 20ms</td>
+                        </tr>
+                        <tr>
+                            <td>精排</td>
+                            <td>~100</td>
+                            <td>~20</td>
+                            <td>< 50ms</td>
+                        </tr>
+                        <tr>
+                            <td>重排,/td>
+                            <td>~20</td>
+                            <td>Top 10</td>
+                            <td>< 10ms</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="recall" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>🔍 召回层策略</h2>
+                    <p>召回层目标：从 50万+ 表盘中快速筛选出可能相关的候选集（~1000个）。</p>
+                    
+                    <table>
+                        <tr>
+                            <th>召回方式</th>
+                            <th>实现技术</th>
+                            <th>适用场景</th>
+                            <th>特点</th>
+                        </tr>
+                        <tr>
+                            <td><strong>标签匹配</strong></td>
+                            <td>倒排索引（Inverted Index）</td>
+                            <td>明确风格需求<br/>如"简约数字"</td>
+                            <td>速度快、精确匹配</td>
+                        </tr>
+                        <tr>
+                            <td><strong>向量检索</strong></td>
+                            <td>表盘预览图 Embedding<br/>ANN 近似最近邻</td>
+                            <td>以图搜图<br/>相似推荐</td>
+                            <td>语义相似、容错性强</td>
+                        </tr>
+                        <tr>
+                            <td><strong>协同过滤</strong></td>
+                            <td>用户-表盘交互矩阵<br/>矩阵分解/双塔模型</td>
+                            <td>个性化推荐<br/>发现新表盘</td>
+                            <td>千人千面</td>
+                        </tr>
+                        <tr>
+                            <td><strong>热门排序</strong></td>
+                            <td>下载量/评分加权</td>
+                            <td>新用户冷启动</td>
+                            <td>保证质量下限</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>多路召回融合</h3>
+                    <div class="info-box">
+                        <p>实际系统中通常采用 <strong>多路召回</strong> 策略，将不同召回方式的结果合并、去重，再送入排序层。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ranking" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>📊 排序层策略</h2>
+                    
+                    <h3>粗排（Pre-ranking）</h3>
+                    <ul>
+                        <li><strong>模型</strong>：轻量级模型（LR、GBDT、浅层NN）</li>
+                        <li><strong>特征</strong>：表盘统计特征、用户基础画像</li>
+                        <li><strong>目标</strong>：快速筛选 Top 1000 → Top 100</li>
+                        <li><strong>延迟</strong>：< 20ms</li>
+                    </ul>
+                    
+                    <h3>精排（Ranking）</h3>
+                    <ul>
+                        <li><strong>模型</strong>：深度模型（DIN、DIEN、Transformer）</li>
+                        <li><strong>特征</strong>：用户-表盘交叉特征、行为序列、上下文</li>
+                        <li><strong>目标</strong>：精确预测点击率/下载率</li>
+                        <li><strong>延迟</strong>：< 50ms</li>
+                    </ul>
+                    
+                    <h3>重排（Re-ranking）</h3>
+                    <ul>
+                        <li><strong>多样性控制</strong>：避免结果过于相似（MMR算法）</li>
+                        <li><strong>新鲜度加权</strong>：新表盘获得曝光机会</li>
+                        <li><strong>业务规则</strong>：付费表盘、作者扶持等</li>
+                        <li><strong>延迟</strong>：< 10ms</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="content-understanding" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>🖼️ 表盘内容理解</h2>
+                    <p>参考专利 <a href="https://patents.google.com/patent/CN109726664A/zh">CN109726664A</a> 的智能表盘推荐方法。</p>
+                    
+                    <h3>图像识别</h3>
+                    <ul>
+                        <li><strong>风格分类</strong>：数字/指针、简约/复杂、商务/运动</li>
+                        <li><strong>颜色提取</strong>：主色调、配色方案（K-means聚类）</li>
+                        <li><strong>布局分析</strong>：组件位置、对称性、复杂度评分</li>
+                        <li><strong>模型选型</strong>：ResNet、EfficientNet、ViT</li>
+                    </ul>
+                    
+                    <h3>OCR 识别</h3>
+                    <ul>
+                        <li>读取表盘上的文字组件（时间、日期、星期）</li>
+                        <li>识别字体风格（衬线/无衬线、手写/印刷）</li>
+                        <li>检测多语言支持</li>
+                    </ul>
+                    
+                    <h3>组件检测</h3>
+                    <ul>
+                        <li>目标检测模型（YOLO、Faster R-CNN）</li>
+                        <li>检测表盘包含的功能模块：
+                            <ul>
+                                <li>基础：时间、日期、星期</li>
+                                <li>健康：心率、步数、卡路里、血氧</li>
+                                <li>环境：天气、温度、空气质量</li>
+                                <li>系统：电量、通知、闹钟</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="intent-understanding" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>💭 用户意图理解</h2>
+                    
+                    <h3>Query 解析</h3>
+                    <p>将自然语言查询转换为结构化查询：</p>
+                    <pre><code>输入："运动风格黑色表盘带心率"
+输出：{
+  风格: ["运动"],
+  颜色: ["黑色"],
+  功能组件: ["心率"],
+  表盘类型: null
+}</code></pre>
+                    
+                    <h3>多模态搜索</h3>
+                    <table>
+                        <tr>
+                            <th>输入类型</th>
+                            <th>处理方式</th>
+                            <th>应用场景</th>
+                        </tr>
+                        <tr>
+                            <td>文字</td>
+                            <td>NLP 解析 → 结果化查询</td>
+                            <td>常规搜索</td>
+                        </tr>
+                        <tr>
+                            <td>图片</td>
+                            <td>图像 Embedding → 向量检索</td>
+                            <td>以图搜图</td>
+                        </tr>
+                        <tr>
+                            <td>语音</ttd>
+                            <td>A R → NHP 解析</td>
+                            <td>手表端语音搜索</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>个态搜索</h3>
+                    <ul>
+                        <li><strong>用户画像</strong>：如何激励创作者</li>
+                        <li><strong>上下文</strong>：用户-表盘交叉特征、上下文</li>
+                        <li><strong>实时反馈</strong>：浏览行为、停留时长、快速滑动</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="performance" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>⚡ 性能优化</h2>
+                    
+                    <h3>诹缘计算</h3>
+                    <ul>
+                        <li>表盘预览图特征提取圤 <strong>端侧</strong> 完成</li>
+                        <li>使用轻采级模型（MobileNet、ShuffleNet）</li>
+                        <li>减屑云竏计算力力同网络传输</li>
+                    </ul>
+                    
+                    <h3>缓存策略</h3>
+                    <ul>
+                        <li><strong>经場缓存</strong>：下载量/评分加权</td>
+                        <li><strong>CDN 缓存</strong>：表盘预览图、元数据</li>
+                        <li><strong>预加载</strong>：预测用户可能搜索的内容提前加载</li>
+                    </ul>
+                    
+                    <h3>增量更新</h3>
+                    <ul>
+                        <li>表盘库更新时只同步 <strong>变化部分</strong></li>
+                        <li>使用版本号机制追踪更新</li>
+                        <li>索引增量构建，避免全量重建</li>
+                    </ul>
+                    
+                    <h3>性能目标</h3>
+                    <table>
+                        <tr>
+                            <th>指标</th>
+                            <th>目标值</th>
+                        </tr>
+                        <tr>
+                            <td>搜索响应时间</td>
+                            <td>< 200ms（P99）</td>
+                        </tr>
+                        <tr>
+                            <td>首屏加载时间</td>
+                            <td>< 1s</td>
+                        </tr>
+                        <tr>
+                            <td>离线可用</td>
+                            <td>最近100次搜索结果</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="todo" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>✅ 待深入研究</h2>
+                    
+                    <ul class="checklist">
+                        <li>表盘图像特征提取的具体算法（ResNet/ViT?）</li>
+                        <li>小样本学习：新表盘冷启动问题</li>
+                        <li>端侧搜索性能优化方案</li>
+                        <li>用户搜索行为数据分析</li>
+                        <li>竞品分析：华为、小米、Apple Watch 表盘搜索实现</li>
+                        <li>表盘设计师生态：如何激励创作者</li>
+                        <li>A/B 测试框架设计</li>
+                        <li>搜索质量评估指标体系</li>
+                    </ul>
+                    
+                    <div class="info-box" style="margin-top: 24px;">
+                        <p>💡 <strong>提示：</strong>已设置定时任务，每周一早上 8:00 自动追踪该领域最新资料并更新此知识库。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="references" class="content-section" style="display:none">
+                <div class="content-card">
+                    <h2>📚 参考资料</h2>
+                    
+                    <h3>专利文献</h3>
+                    <ol>
+                        <li><a href="https://patents.google.com/patent/CN113268235A/zh">CN113268235A - 智能手表的云端表盘设计方法</a></li>
+                        <li><a href="https://patents.google.com/patent/CN109726664A/zh">CN109726664A - 智能表盘推荐方法、系统、设备及存储介质</a></li>
+                    </ol>
+                    
+                    <h3>学术论文</h3>
+                    <ol>
+                        <li><a href="https://petra.isenberg.cc/publications/papers/Islam_2020_VIO.pdf">Visualizing Information on Watch Faces: A Survey</a> - 表盘信息可视化综述</li>
+                    </ol>
+                    
+                    <h3>技术博客</h3>
+                    <ol>
+                        <li><a href="https://blog.csdn.net/winfield821/article/details/155826884">推荐/搜索系统的召回、精排、粗排、打散</a></li>
+                        <li><a href="https://aws.amazon.com/cn/blogs/china/recommended-system-overview-of-recommended-system-series-part-1/">推荐系统系列之推荐系统概览</a> - AWS 官方博客</li>
+                    </ol>
+                    
+                    <h3>社区讨论</h3>
+                    <ol>
+                        <li><a href="https://community.facer.io/t/search-and-filter-and-order/41645">Facer Community - Search and filter feature request</a></li>
+                    </ol>
+                    
+                    <h3>行业报告</h3>
+                    <ol>
+                        <li>2024年中国智能手表行业研究报告 - 东方财富</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>表盘搜索功能研究知识库 | 最后更新：2026-02-28</p>
+                <p style="margin-top: 8px; font-size: 12px;">由 Kimi Claw 自动生成与维护</p>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            // 隐藏所有 section
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // 显示目标 section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // 滚动到顶部
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
